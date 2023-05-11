@@ -71,7 +71,7 @@ function(check_vulkan_version)
         message(FATAL_ERROR "No GPU supporting Vulkan found in vulkaninfo. Does your GPU (driver) support Vulkan?")
     endif()
 
-    string(REGEX MATCHALL "apiVersion[ ]*=[ ]*[0-9a-fA-F]+[ ]+[(]([0-9]+[.][0-9]+[.][0-9]+)[)]" GPU_API_VERSIONS ${VULKAN_INFO_OUTPUT})
+    string(REGEX MATCHALL "apiVersion[ ]*=[ ]*[0-9a-fA-F]+[ ]+[(]([0-9]+[.][0-9]+[.][0-9]+)[)]|apiVersion[ ]*=[ ]*([0-9]+[.][0-9]+[.][0-9]+)[ ]*[(][0-9]+[)]" GPU_API_VERSIONS ${VULKAN_INFO_OUTPUT})
     if(NOT GPU_API_VERSIONS)
         message(FATAL_ERROR "No valid Vulkan API version found in vulkaninfo. Does your GPU (driver) support Vulkan?")
     endif()
@@ -94,6 +94,8 @@ function(check_vulkan_version)
 
         # Extract API version
         if(${API_VERSION} MATCHES "apiVersion[ ]*=[ ]*[0-9a-fA-F]+[ ]+[(]([0-9]+[.][0-9]+[.][0-9]+)[)]")
+            set(VULKAN_DRIVER_VERSION ${CMAKE_MATCH_1})
+        elseif(${API_VERSION} MATCHES "apiVersion[ ]*=[ ]*([0-9]+[.][0-9]+[.][0-9]+)[ ]*[(][0-9]+[)]")
             set(VULKAN_DRIVER_VERSION ${CMAKE_MATCH_1})
         else()
             message(FATAL_ERROR "API version match failed. This should not have happened...")
